@@ -1,4 +1,4 @@
-#arr
+# arr
 
 I'm making this because all Functors are not Endofunctors, and I believe
 that means that we are leaving the majority of what CT has to offer
