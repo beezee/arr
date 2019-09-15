@@ -27,4 +27,5 @@ object FunctorProperties {
 object ScalaFunctorSpec extends Properties("Scala Functors") {
   property("List") = FunctorProperties.scala[List]
   property("Option") = FunctorProperties.scala[Option]
+  property("Id") = FunctorProperties.scala[Functor.Id]
 }
