@@ -2,6 +2,8 @@ lazy val root = (project in file(".")).
   settings(
     organization := "bz",
     scalaVersion := "2.12.5",
+    resolvers += Resolver.sonatypeRepo("releases"),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
     libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",
     scalacOptions ++= Seq(
       "-deprecation",
