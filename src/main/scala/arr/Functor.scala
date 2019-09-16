@@ -51,12 +51,12 @@ trait FunctorLaws[F[_], =>:[_, _], =>::[_, _]] {
   import Eval.syntax._
   import Functor.syntax._
 
-  def id[A]: F[A] => (F[A], F[A]) =
-    (fa: F[A]) => (codomain.id[F[A]](fa), functor.map(domain.id[A])(fa))
+  def id[A]: F[A] => Boolean =
+    (fa: F[A]) => codomain.id[F[A]](fa) == functor.map(domain.id[A])(fa)
 
-  def monotone[A, B, C](bc: B =>: C, ab: A =>: B): F[A] => (F[C], F[C]) =
-    (fa: F[A]) => (bc.compose(ab).map[F, =>::].apply(fa), 
-      bc.map[F, =>::].compose(ab.map[F, =>::])(fa))
+  def monotone[A, B, C](bc: B =>: C, ab: A =>: B): F[A] => Boolean =
+    (fa: F[A]) => bc.compose(ab).map[F, =>::].apply(fa) ==
+                  bc.map[F, =>::].compose(ab.map[F, =>::])(fa)
 }
 
 object FunctorLaws {

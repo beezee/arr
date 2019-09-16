@@ -9,13 +9,11 @@ object FunctorProperties {
       fa: Arbitrary[F[Int]]) = {
     import aa._
     ("id" |: forAll { 
-      (fa: F[Int]) => l.id[Int].andThen(t => t._1 == t._2)(fa)
+      (fa: F[Int]) => l.id[Int](fa)
     }) && 
     ("monotone" |: forAll {
-      (is: (Int, Int) =>: String, li: Int =>: (Int, Int), in: F[Int]) => {
-        val (rl, rr) = l.monotone(is, li)(in)
-        rl == rr
-      }
+      (is: (Int, Int) =>: String, li: Int =>: (Int, Int), in: F[Int]) =>
+        l.monotone(is, li)(in)
     })
   }
 
