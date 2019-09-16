@@ -60,8 +60,45 @@ object Monad {
     })
 
   object syntax {
+    import Category.syntax._
     implicit class MonadOps[F[_], =>:[_, _], A, B](afb: A =>: F[B])(implicit m: Monad[F, =>:]) {
       def bind: F[A] =>: F[B] = m.bind(afb)
+      def >=>[C](bfc: B =>: F[C])(implicit c: Category[=>:]): A =>: F[C] =
+        bfc.bind.compose(afb)
+      def <=<[C](cfa: C =>: F[A])(implicit c: Category[=>:]): C =>: F[B] =
+        afb.bind.compose(cfa)
     }
   }
+}
+
+trait MonadLaws[F[_], =>:[_, _]] {
+  implicit val monad: Monad[F, =>:]
+  implicit val category: Category[=>:]
+  implicit val eval: Eval[=>:]
+
+  import Category.syntax._
+  import Eval.syntax._
+  import Monad.syntax._
+
+  def assoc[A, B, C, D](
+    ab: A =>: F[B], bc: B =>: F[C], cd: C =>: F[D]): F[A] => Boolean =
+      (a: F[A]) => ((cd <=< bc) <=< ab).bind(a) == 
+                    (cd <=< (bc <=< ab)).bind(a)
+
+  def id[A, B](ab: A =>: F[B]): F[A] => Boolean =
+    (a: F[A]) => (ab <=< monad.point[A]).bind(a) ==
+              (monad.point[B] <=< ab).bind(a)
+
+}
+
+object MonadLaws {
+  def apply[F[_], =>:[_, _]](implicit
+    c: Category[=>:], e: Eval[=>:],
+    m: Monad[F, =>:]) = new MonadLaws[F, =>:] {
+      implicit val monad = m
+      implicit val category = c
+      implicit val eval = e
+    }
+
+  implicit def scala[F[_]: Monad.Scala] = MonadLaws[F, Function1]
 }
