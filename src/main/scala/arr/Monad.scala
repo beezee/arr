@@ -68,6 +68,18 @@ object Monad {
       def <=<[C](cfa: C =>: F[A])(implicit c: Category[=>:]): C =>: F[B] =
         afb.bind.compose(cfa)
     }
+
+    // Note - this provides compatibility with for-comprehensions
+    // _at the expense of lifting *all* of the Scala category_ into Category[=>:]
+    // This might be reasonable if F can provide sufficient constraints, but
+    // it certainly looks like a place where the bottom can fall out
+    implicit class MonadicOps[F[_], =>:[_, _]: Eval, A](a: F[A])(
+        implicit m: Monad[F, =>:], f: Functor[F, Function1, =>:]) {
+      import Eval.syntax._
+      import Functor.syntax._
+      def flatMap[B](afb: A => F[B]): F[B] = m.join(afb.map[F, =>:].apply(a))
+      def map[B](ab: A => B): F[B] = ab.map[F, =>:].apply(a)
+    }
   }
 }
 
