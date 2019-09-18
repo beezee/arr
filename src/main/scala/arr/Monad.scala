@@ -99,7 +99,7 @@ trait MonadLaws[F[_], =>:[_, _]] {
 
   def id[A, B](ab: A =>: F[B]): F[A] => Boolean =
     (a: F[A]) => (ab <=< monad.point[A]).bind(a) ==
-              (monad.point[B] <=< ab).bind(a)
+                 (monad.point[B] <=< ab).bind(a)
 
 }
 
